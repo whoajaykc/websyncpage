@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message Sync Web Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 2em 3em;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.09);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2em;
+            min-width: 300px;
+        }
+
+        #webTextBox {
+            font-size: 22px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: 1.5px solid #6366f1;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color .2s;
+        }
+
+        label {
+            color: #6366f1;
+            font-weight: 600;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <label for="webTextBox">Web Page Textbox</label>
+        <input type="text" id="webTextBox" placeholder="Waiting for input from React Native..." />
+    </div>
+    <script>
+        // Listen for postMessage from parent or WebView
+        window.addEventListener('message', function (event) {
+            // For security, you could check event.origin here
+            if (event.data && typeof event.data === 'string') {
+                document.getElementById('webTextBox').value = event.data;
+            }
+        });
+
+        // For debugging: allow typing in the web input and log it
+        document.getElementById('webTextBox').addEventListener('input', function (e) {
+            console.log('Web textbox changed:', e.target.value);
+        });
+    </script>
+</body>
+
+</html>
