@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Message Sync Web Page</title>
+    <title>Web Sync Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,21 +48,18 @@
 
 <body>
     <div class="container">
-        <label for="webTextBox">Web Page Textbox</label>
+        <label for="webTextBox">Raju Page Textbox</label>
         <input type="text" id="webTextBox" placeholder="Waiting for input from React Native..." />
     </div>
     <script>
-        // Listen for postMessage from parent or WebView
-        window.addEventListener('message', function (event) {
-            // For security, you could check event.origin here
-            if (event.data && typeof event.data === 'string') {
-                document.getElementById('webTextBox').value = event.data;
-            }
+        // Listen for messages from React Native WebView
+        document.addEventListener('message', function (event) {
+            document.getElementById('webTextBox').value = event.data;
         });
 
-        // For debugging: allow typing in the web input and log it
-        document.getElementById('webTextBox').addEventListener('input', function (e) {
-            console.log('Web textbox changed:', e.target.value);
+        // For debugging in browsers (not needed in WebView but handy for local testing)
+        window.addEventListener('message', function (event) {
+            document.getElementById('webTextBox').value = event.data;
         });
     </script>
 </body>
