@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web Sync Page</title>
+    <title>WebSyncPage</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,44 +27,14 @@
             min-width: 300px;
             margin-top: 40px;
             min-height: 300px;
-        }
-
-        .footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100vw;
-            background: #fff;
-            border-top: 1.5px solid #6366f1;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px #6366f122;
-            z-index: 10;
-        }
-
-        .footer button {
-            background: #6366f1;
-            color: #fff;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 24px;
-            margin: 0 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .footer button.active,
-        .footer button:hover {
-            background: #3730a3;
+            width: 360px;
         }
 
         .label {
             color: #6366f1;
             font-weight: 600;
             font-size: 18px;
+            margin-bottom: 5px;
         }
 
         .input {
@@ -104,35 +74,22 @@
             background: #059669;
         }
 
-        .logout-msg {
-            color: #ef4444;
-            font-size: 1.2rem;
-            text-align: center;
-            margin-top: 45px;
-        }
-
         @media (max-width: 510px) {
             .container {
                 min-width: 0;
                 padding: 1em 0.5em;
-            }
-
-            .footer button {
-                font-size: 1rem;
-                padding: 8px 10px;
+                width: 96vw;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container" id="mainContainer">
-        <!-- Home page content by default -->
+    <div class="container">
         <div id="homeSection">
-            <span class="label">Welcome to Raju's WebSync Home!</span>
+            <span class="label">Welcome to Home!</span>
             <div style="margin-top: 10px; color: #6366f1;">Use the options below to navigate.</div>
         </div>
-        <!-- Terminal page content (hidden by default) -->
         <div id="terminalSection" style="display:none;">
             <span class="label">Weight</span>
             <input type="text" id="weightBox" class="input" placeholder="Waiting for weight..." readonly />
@@ -140,69 +97,40 @@
             <input type="text" id="itemNameBox" class="input" placeholder="Enter item name..." />
             <button class="ok-btn" id="okBtn">OK</button>
         </div>
-        <!-- Logout page -->
-        <div id="logoutSection" style="display:none;">
-            <div class="logout-msg">You are logged out.</div>
-        </div>
-        <!-- Hidden input for React Native to set weight -->
         <input type="hidden" id="hiddenWeight" />
     </div>
-    <div class="footer">
-        <button id="homeBtn" class="active">Home</button>
-        <button id="terminalBtn">Terminal</button>
-        <button id="logoutBtn">Logout</button>
-    </div>
     <script>
-        // --- UI NAVIGATION ---
-        const homeBtn = document.getElementById('homeBtn');
-        const terminalBtn = document.getElementById('terminalBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
         const homeSection = document.getElementById('homeSection');
         const terminalSection = document.getElementById('terminalSection');
-        const logoutSection = document.getElementById('logoutSection');
         const weightBox = document.getElementById('weightBox');
         const itemNameBox = document.getElementById('itemNameBox');
         const okBtn = document.getElementById('okBtn');
         const hiddenWeight = document.getElementById('hiddenWeight');
 
-        function setActive(btn) {
-            [homeBtn, terminalBtn, logoutBtn].forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        homeBtn.onclick = () => {
-            setActive(homeBtn);
-            homeSection.style.display = '';
-            terminalSection.style.display = 'none';
-            logoutSection.style.display = 'none';
-        };
-        terminalBtn.onclick = () => {
-            setActive(terminalBtn);
-            homeSection.style.display = 'none';
-            terminalSection.style.display = '';
-            logoutSection.style.display = 'none';
-            // When terminal opens, fill weightBox from hiddenWeight
-            const token = hiddenWeight.value || '';
-            if (token) {
-                // Simulate decrypting. In real app, use a secure algorithm.
-                let decrypted = '';
-                try {
-                    decrypted = atob(token);
-                } catch (e) {
-                    decrypted = '[Invalid token]';
+        // Show section based on React Native message
+        function showSection(section) {
+            if (section === 'home') {
+                homeSection.style.display = '';
+                terminalSection.style.display = 'none';
+            } else if (section === 'terminal') {
+                homeSection.style.display = 'none';
+                terminalSection.style.display = '';
+                // Set weight value if available
+                const token = hiddenWeight.value || '';
+                if (token) {
+                    let decrypted = '';
+                    try {
+                        decrypted = atob(token);
+                    } catch (e) {
+                        decrypted = '[Invalid token]';
+                    }
+                    weightBox.value = decrypted;
+                } else {
+                    weightBox.value = '';
                 }
-                weightBox.value = decrypted;
-            } else {
-                weightBox.value = '';
             }
-        };
-        logoutBtn.onclick = () => {
-            setActive(logoutBtn);
-            homeSection.style.display = 'none';
-            terminalSection.style.display = 'none';
-            logoutSection.style.display = '';
-        };
-
-        // OK button logic
+        }
+        // OK button logic (demo)
         okBtn.onclick = () => {
             const weight = weightBox.value;
             const item = itemNameBox.value.trim();
@@ -216,35 +144,32 @@
                 return;
             }
             alert(`Weight: ${weight}\nItem: ${item}\n(Simulate sending to backend)`);
-            // Reset item name for new entry
             itemNameBox.value = '';
         };
 
-        // --- Secure Weight Receiver from React Native ---
-        // Expecting: window.postMessage(JSON.stringify({ type: 'weight', value: '<encrypted>' }))
-        function handleWeightToken(token) {
-            hiddenWeight.value = token; // store for terminal
-        }
+        // Listen for messages from React Native
         function handleMessageEvent(event) {
             let data = event.data;
             try {
                 if (typeof data === 'string') data = JSON.parse(data);
-                if (data && data.type === 'weight') {
-                    handleWeightToken(data.value);
-                    // If Terminal is open, update weightBox instantly
+                if (data && data.type === 'navigate') {
+                    showSection(data.section);
+                } else if (data && data.type === 'weight') {
+                    hiddenWeight.value = data.value;
                     if (terminalSection.style.display !== 'none') {
                         try { weightBox.value = atob(data.value); } catch (e) { weightBox.value = '[Invalid token]' }
                     }
                 }
             } catch (e) {
-                // Ignore invalid messages
+                // If it's not JSON, treat it as text sync
+                // (Optionally handle text sync if needed)
             }
         }
         document.addEventListener('message', handleMessageEvent);
         window.addEventListener('message', handleMessageEvent);
 
-        // For demo: allow manual test (remove in prod)
-        // hiddenWeight.value = btoa("72.3 kg");
+        // Default show home
+        showSection('home');
     </script>
 </body>
 
