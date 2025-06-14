@@ -3,173 +3,205 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebSyncPage</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Bluetooth App Web</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f9fafb;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
         }
 
-        .container {
-            background: #fff;
-            padding: 2em 3em;
-            border-radius: 10px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.09);
-            display: flex;
-            flex-direction: column;
-            gap: 1.2em;
-            min-width: 300px;
-            margin-top: 40px;
-            min-height: 300px;
-            width: 360px;
+        #home,
+        #terminal {
+            display: none;
+            padding: 20px;
         }
 
-        .label {
-            color: #6366f1;
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 5px;
+        #home.active,
+        #terminal.active {
+            display: block;
         }
 
-        .input {
-            font-size: 1.1rem;
-            padding: 10px 16px;
-            border-radius: 6px;
-            border: 1.5px solid #6366f1;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            margin-top: 3px;
-            color: #3730a3;
-            background: #f6f8ff;
-            transition: border-color .2s;
-        }
-
-        .input:disabled {
-            background: #e5e7eb;
-            color: #a1a1aa;
+        .device-box {
+            margin-top: 24px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 18px 16px;
+            box-shadow: 0 1px 4px #cbd5e1;
+            text-align: center;
         }
 
         .ok-btn {
-            background: #10b981;
-            color: #fff;
-            font-size: 1.15rem;
+            margin-top: 22px;
+            padding: 12px 34px;
+            background: #0369a1;
+            color: white;
             border: none;
-            border-radius: 7px;
-            padding: 10px 28px;
-            margin-top: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .weight-label {
+            font-weight: bold;
+            font-size: 19px;
+            margin-bottom: 5px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .weight-input {
+            width: 210px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 19px;
+            text-align: center;
+            background: #fff;
+            margin-bottom: 18px;
+        }
+
+        .device-name {
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 4px;
+            text-align: center;
+            color: #334155;
+        }
+
+        .device-id {
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
+
+        .nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 60px;
+            background: #0369a1;
+            display: flex;
+            border-top: 1px solid #e0e7ef;
+        }
+
+        .nav-btn {
+            flex: 1;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            border: none;
+            background: transparent;
             cursor: pointer;
-            transition: background 0.2s;
-            box-shadow: 0 2px 8px #10b98122;
+            transition: background 0.15s;
         }
 
-        .ok-btn:hover {
-            background: #059669;
+        .nav-btn.active,
+        .nav-btn:active {
+            background: #155e75;
+            text-decoration: underline;
         }
 
-        @media (max-width: 510px) {
-            .container {
-                min-width: 0;
-                padding: 1em 0.5em;
-                width: 96vw;
+        .header {
+            height: 60px;
+            background: #0369a1;
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        @media (max-width: 600px) {
+
+            .device-box,
+            #home,
+            #terminal {
+                padding: 12px 5px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div id="homeSection">
-            <span class="label">Welcome to Home!</span>
-            <div style="margin-top: 10px; color: #6366f1;">Use the options below to navigate.</div>
+    <div class="header">React Native</div>
+    <div id="home" class="active">
+        <div class="device-box">
+            <div class="device-name" id="devicename-home">Device Name Here</div>
+            <div class="device-id" id="deviceid-home">00:11:22:33:44:55</div>
+            <button class="ok-btn" onclick="showTerminal()">OK</button>
         </div>
-        <div id="terminalSection" style="display:none;">
-            <span class="label">Weight</span>
-            <input type="text" id="weightBox" class="input" placeholder="Waiting for weight..." readonly />
-            <span class="label">Item Name</span>
-            <input type="text" id="itemNameBox" class="input" placeholder="Enter item name..." />
-            <button class="ok-btn" id="okBtn">OK</button>
-        </div>
-        <input type="hidden" id="hiddenWeight" />
     </div>
+    <div id="terminal">
+        <div class="weight-label">Weight</div>
+        <input class="weight-input" type="text" id="weight" placeholder="Weight will appear here" readonly />
+        <div style="margin-top:12px;">
+            <div class="device-name" id="devicename-terminal" style="font-size:16px;">Device Name Here</div>
+            <div class="device-id" id="deviceid-terminal">00:11:22:33:44:55</div>
+        </div>
+        <button class="ok-btn" onclick="showHome()">OK</button>
+    </div>
+    <nav class="nav">
+        <button class="nav-btn active" id="nav-home" onclick="showHome()">Home</button>
+        <button class="nav-btn" id="nav-terminal" onclick="showTerminal()">Terminal</button>
+    </nav>
+
     <script>
-        const homeSection = document.getElementById('homeSection');
-        const terminalSection = document.getElementById('terminalSection');
-        const weightBox = document.getElementById('weightBox');
-        const itemNameBox = document.getElementById('itemNameBox');
-        const okBtn = document.getElementById('okBtn');
-        const hiddenWeight = document.getElementById('hiddenWeight');
+        // Example device info (replace this with real data via postMessage if needed)
+        const DEVICE_NAME = "Device Name Here";
+        const DEVICE_ID = "00:11:22:33:44:55";
+        // Set device name/id in both sections
+        document.getElementById('devicename-home').innerText = DEVICE_NAME;
+        document.getElementById('deviceid-home').innerText = DEVICE_ID;
+        document.getElementById('devicename-terminal').innerText = DEVICE_NAME;
+        document.getElementById('deviceid-terminal').innerText = DEVICE_ID;
 
-        // Show section based on React Native message
-        function showSection(section) {
-            if (section === 'home') {
-                homeSection.style.display = '';
-                terminalSection.style.display = 'none';
-            } else if (section === 'terminal') {
-                homeSection.style.display = 'none';
-                terminalSection.style.display = '';
-                // Set weight value if available
-                const token = hiddenWeight.value || '';
-                if (token) {
-                    let decrypted = '';
-                    try {
-                        decrypted = atob(token);
-                    } catch (e) {
-                        decrypted = '[Invalid token]';
-                    }
-                    weightBox.value = decrypted;
-                } else {
-                    weightBox.value = '';
-                }
-            }
+        function showHome() {
+            document.getElementById('home').classList.add('active');
+            document.getElementById('terminal').classList.remove('active');
+            document.getElementById('nav-home').classList.add('active');
+            document.getElementById('nav-terminal').classList.remove('active');
         }
-        // OK button logic (demo)
-        okBtn.onclick = () => {
-            const weight = weightBox.value;
-            const item = itemNameBox.value.trim();
-            if (!weight) {
-                alert("No weight value!");
-                return;
-            }
-            if (!item) {
-                alert("Please enter item name.");
-                itemNameBox.focus();
-                return;
-            }
-            alert(`Weight: ${weight}\nItem: ${item}\n(Simulate sending to backend)`);
-            itemNameBox.value = '';
-        };
+        function showTerminal() {
+            document.getElementById('home').classList.remove('active');
+            document.getElementById('terminal').classList.add('active');
+            document.getElementById('nav-home').classList.remove('active');
+            document.getElementById('nav-terminal').classList.add('active');
+        }
 
-        // Listen for messages from React Native
-        function handleMessageEvent(event) {
-            let data = event.data;
+        // OPTIONAL: Listen for navigation messages from React Native WebView
+        document.addEventListener('message', function (event) {
+            if (event.data === 'home') showHome();
+            if (event.data === 'terminal') showTerminal();
+            // Optionally receive device info or weight
+            // Example: {type: "weight", value: "72.5"}
             try {
-                if (typeof data === 'string') data = JSON.parse(data);
-                if (data && data.type === 'navigate') {
-                    showSection(data.section);
-                } else if (data && data.type === 'weight') {
-                    hiddenWeight.value = data.value;
-                    if (terminalSection.style.display !== 'none') {
-                        try { weightBox.value = atob(data.value); } catch (e) { weightBox.value = '[Invalid token]' }
-                    }
+                const msg = JSON.parse(event.data);
+                if (msg.type === "weight" && msg.value !== undefined) {
+                    document.getElementById('weight').value = msg.value;
                 }
-            } catch (e) {
-                // If it's not JSON, treat it as text sync
-                // (Optionally handle text sync if needed)
-            }
-        }
-        document.addEventListener('message', handleMessageEvent);
-        window.addEventListener('message', handleMessageEvent);
+                if (msg.type === "device" && msg.name && msg.id) {
+                    document.getElementById('devicename-home').innerText = msg.name;
+                    document.getElementById('deviceid-home').innerText = msg.id;
+                    document.getElementById('devicename-terminal').innerText = msg.name;
+                    document.getElementById('deviceid-terminal').innerText = msg.id;
+                }
+            } catch (e) { }
+        });
+        // iOS compatibility
+        window.addEventListener('message', function (event) {
+            if (event.data === 'home') showHome();
+            if (event.data === 'terminal') showTerminal();
+        });
 
-        // Default show home
-        showSection('home');
+        // OPTIONAL: For demo, simulate weight after 3s in terminal
+        // setTimeout(() => {document.getElementById('weight').value = "72.3";}, 3000);
     </script>
 </body>
 
